@@ -13,7 +13,7 @@ var usuarioSchema = new Schema({
     email: { type: String, unique: true, required: [true, 'el correo es necesario'] },
     password: { type: String, required: [true, 'la contraseña es necesario'] },
     img: { type: String, required: false },
-    role: { type: String, required: true, default: 'USER ROLE', enum: rolesValidos }
+    role: { type: String, required: true, default: 'USER_ROLE', enum: rolesValidos }
 });
 usuarioSchema.plugin(uniqueValidator, { message: 'el {PATH} debe de ser unico' });
 module.exports = mongoose.model('Usuario', usuarioSchema);

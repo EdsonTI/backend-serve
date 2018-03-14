@@ -1,7 +1,7 @@
 var express = require('express'); //libreria del servidor mongo
 var bcrypt = require('bcryptjs'); //libreria para encriptar el password
 var jwt = require('jsonwebtoken'); //libreria del manager token
-var SEED = require('../config/config').SEED; //la no se que... del token
+var SEED = require('../config/config').SEED; //la no se que(semilla)... del token
 
 var Usuario = require('../models/usuario'); //modelo del usuario
 var mdAutenticacion = require('../middlewares/autenticacion');
@@ -13,7 +13,12 @@ var app = express(); // iniciando base de datos
 // OBTENER LISTADO DE USUARIOS
 // ===========================
 app.get('/', (req, res, next) => {
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
+
     Usuario.find({}, 'nombre email img role')
+        .skip(desde) // permite saltar el registro hasta el valor de desde
+        .limit(5) // limita la cantidad de registros a mostrar
         .exec(
             (err, usuarios) => {
                 if (err) {
@@ -24,10 +29,15 @@ app.get('/', (req, res, next) => {
                     });
                 }
 
-                res.status(200).json({
-                    ok: true,
-                    mensaje: usuarios
-                });
+                Usuario.count({}, (err, conteo) => {
+
+                    res.status(200).json({
+                        ok: true,
+                        mensaje: usuarios,
+                        total: conteo
+                    });
+                })
+
 
             });
 
@@ -35,10 +45,6 @@ app.get('/', (req, res, next) => {
 // ==========================
 // FIN OBTENER LISTADO DE USUARIOS
 // ===========================
-
-
-
-
 // ==========================
 // ACTUALIZAR USUARIO
 // ===========================
@@ -46,7 +52,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
     var id = req.params.id;
     var body = req.body;
 
-    Usuario.find(id, (err, usuario) => {
+    Usuario.findById(id, (err, usuario) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -91,7 +97,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 // ==========================
 // CREAR UN NUEVO USUARIO
 // ===========================
-app.post('/', (req, res) => {
+app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
 
