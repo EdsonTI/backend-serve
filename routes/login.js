@@ -56,20 +56,21 @@ app.post('/google', (req, res) => {
                     });
                 }
             } else { //no existe el usuario en la BD
+                // aqui se guardan los atributos de google en nuestro clase usuario
                 var usuario = new Usuario();
                 usuario.nombre = payload.name;
                 usuario.email = payload.email;
                 usuario.password = '=D';
-                usuario.img = payload.img;
+                usuario.img = payload.picture; // imagen de google
                 usuario.google = true;
 
-                usuario.save((err, usuarioDB) => {
+                usuario.save((err, usuarioDB) => { // guardando el usuario en la base de datos
                     if (err) {
                         return res.status(500).json({
                             ok: false,
                             message: 'error al crear usuario-google',
                             errors: err
-                        })
+                        });
                     }
 
                     usuario.password = ':D';
@@ -82,7 +83,8 @@ app.post('/google', (req, res) => {
                         message: 'SE CREO CON EXITO EL USUARIO DE GOOGLE',
                         usuario: usuarioDB,
                         token: token,
-                        id: usuarioDB._id
+                        id: usuarioDB._id,
+                        img: usuarioDB.img
                     });
                 });
             }

@@ -39,7 +39,7 @@ app.put('/:tipo/:id', (req, res, next) => {
     var extencionArchivo = nombreCortado[nombreCortado.length - 1];
 
     // validar extenciones
-    var extencionesValidas = ['png', 'jpg', 'gif', 'jpeg'];
+    var extencionesValidas = ['png', 'jpg', 'gif', 'jpeg', 'PNG', 'JPG', 'JPEG'];
 
     if (extencionesValidas.indexOf(extencionArchivo) < 0) {
         return res.status(400).json({
